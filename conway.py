@@ -7,7 +7,7 @@ from curses import wrapper
 from shutil import get_terminal_size
 import curses
 import time
-SLEEP = 0.4
+SLEEP = 0.1
 BOLD = '\033[1m'
 END = '\033[0m'
 
@@ -47,8 +47,8 @@ class Board():
         self.y_size = y
         self._pic_array = [[Cell(x, y) for x in range(self.x_size)] for y in range(self.y_size)]
         self.iterations_ran = 0
-
         self.find_neighbors()
+
     def find_neighbors(self):
         for row in self._pic_array:
             for cell in row:
@@ -82,22 +82,45 @@ class Board():
             for cell in row:
                 cell.bit = randint(0, 1)
 
+    def handle_keyboard(self, key):
+        if key == 'q':
+            exit(1)
+        if key == curses.KEY_LEFT or key == 'h':
+            return (0, -2)
+        if key == curses.KEY_RIGHT or key == 'l':
+            return (0, 2)
+        if key == curses.KEY_UP or key == 'k':
+            return (-1, 0)
+        if key == curses.KEY_DOWN or key == 'j':
+            return (1, 0)
+        return (1, 1)
 
     def draw_screen(self, screen, status_scr):
         screen.clear()
+        screen.border()
+        screen.keypad(True)
+        screen.leaveok(False)
         status_scr.clear()
         status_scr.border()
+        cur_y, cur_x = curses.getsyx()
         for row in self._pic_array:
             string = ''
             for cell in row:
                 string += f'{cell.char} '
 
-            screen.addstr(cell.y, 0, string)
+            screen.addstr(cell.y + 1, 1, string)
+            #screen.addstr(cell.y, 0, string)
 
+        mov_y, mov_x = self.handle_keyboard(screen.getkey())
         status_scr.addstr(1, 1, f'Generation')
         status_scr.addstr(2, 1, f'{self.iterations_ran}')
-        status_scr.refresh()
-        screen.refresh()
+        status_scr.addstr(3, 1, f'{cur_y}, {cur_x}')
+        screen.move(cur_y + mov_y, cur_x + mov_x)
+        screen.cursyncup()
+        status_scr.noutrefresh()
+        screen.noutrefresh()
+        curses.doupdate()
+
     def _generate(self, iterations, screen, status_scr):
 
         self.iterations_ran = 0
@@ -136,12 +159,8 @@ def main(stdscr):
     width = term_width - 15
     board_scr = curses.newwin(height + 1, width, 0, 0)
     status_scr = curses.newwin(height + 1, 15, 0, width)
-    t = Board(int(width / 2), height)
-    t._pic_array[15][15].bit = 1
-    t._pic_array[15][16].bit = 1
-    t._pic_array[15][17].bit = 1
-    t._pic_array[14][17].bit = 1
-    t._pic_array[13][16].bit = 1
+    t = Board(int(width / 2) - 1, height - 1)
+    t.populate()
     t._generate(999, board_scr, status_scr)
     #t._generate(999, stdscr)
 
