@@ -4,6 +4,8 @@ from random import randint, choice
 import sys
 import copy
 from curses import wrapper
+from shutil import get_terminal_size
+import curses
 import time
 SLEEP = 0.4
 BOLD = '\033[1m'
@@ -21,7 +23,6 @@ class Cell():
     def char(self):
         if self.bit == 1:
             return '@'
-            #return f'{BOLD}*{END}'
         return '-'
 
 
@@ -32,20 +33,20 @@ class Cell():
                 live_neighbors += 1
         if self.bit == 1 and live_neighbors < 2:
             return 0
-        elif self.bit == 1 and live_neighbors >= 2 and live_neighbors <= 3:
+        if self.bit == 1 and live_neighbors >= 2 and live_neighbors <= 3:
             return self.bit
-        elif self.bit == 1 and live_neighbors > 3:
+        if self.bit == 1 and live_neighbors > 3:
             return 0
-        elif self.bit == 0 and live_neighbors == 3:
+        if self.bit == 0 and live_neighbors == 3:
             return 1
-        else:
-            return self.bit
+        return self.bit
 
 class Board():
     def __init__(self, x=5, y=5):
-        self.x_size = x 
+        self.x_size = x
         self.y_size = y
         self._pic_array = [[Cell(x, y) for x in range(self.x_size)] for y in range(self.y_size)]
+        self.iterations_ran = 0
 
         self.find_neighbors()
     def find_neighbors(self):
@@ -82,29 +83,34 @@ class Board():
                 cell.bit = randint(0, 1)
 
 
-    def draw_screen(self, screen):
+    def draw_screen(self, screen, status_scr):
         screen.clear()
+        status_scr.clear()
+        status_scr.border()
         for row in self._pic_array:
             string = ''
             for cell in row:
                 string += f'{cell.char} '
 
-                #screen.addstr(cell.y, cell.x, f'{cell.char}')
             screen.addstr(cell.y, 0, string)
-        screen.refresh()
-    def _generate(self, iterations, screen):
 
-        iterations_ran = 0
+        status_scr.addstr(1, 1, f'Generation')
+        status_scr.addstr(2, 1, f'{self.iterations_ran}')
+        status_scr.refresh()
+        screen.refresh()
+    def _generate(self, iterations, screen, status_scr):
+
+        self.iterations_ran = 0
 
         new_array = [[None for _ in range(self.x_size)] for _ in range(self.y_size)]
-        while iterations_ran < iterations:
-            self.draw_screen(screen)
+        while self.iterations_ran < iterations:
+            self.draw_screen(screen, status_scr)
             time.sleep(SLEEP)
             for row in self._pic_array:
                 for cell in row:
                     new_status = cell.update()
                     new_array[cell.y][cell.x] = new_status
-            iterations_ran += 1
+            self.iterations_ran += 1
             for row in self._pic_array:
                 for cell in row:
                     cell.bit = new_array[cell.y][cell.x]
@@ -125,13 +131,19 @@ class Board():
 def main(stdscr):
     stdscr.clear()
 
-    t = Board(60, 35)
+    term_width, term_height = get_terminal_size()
+    height = term_height - 1
+    width = term_width - 15
+    board_scr = curses.newwin(height + 1, width, 0, 0)
+    status_scr = curses.newwin(height + 1, 15, 0, width)
+    t = Board(int(width / 2), height)
     t._pic_array[15][15].bit = 1
     t._pic_array[15][16].bit = 1
     t._pic_array[15][17].bit = 1
     t._pic_array[14][17].bit = 1
     t._pic_array[13][16].bit = 1
-    t._generate(999, stdscr)
+    t._generate(999, board_scr, status_scr)
+    #t._generate(999, stdscr)
 
 if __name__ == '__main__':
     wrapper(main)
