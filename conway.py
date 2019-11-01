@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from random import randint
+import curses
 from curses import wrapper
 from shutil import get_terminal_size
-import curses
 SLEEP = 0.1
 BOLD = '\033[1m'
 END = '\033[0m'
@@ -92,7 +92,6 @@ class GameState():
             self.board[event.y][event.x].flip()
         if isinstance(event, RandomFill):
             self.populate()
-    
 
 
     def tick(self):
@@ -191,7 +190,9 @@ class GameScreen():
         cur_y, cur_x = self.stdscr.getyx()
         max_y, max_x = self.screen.getmaxyx()
 
-        if cur_y + event.y > 0 and cur_y + event.y < max_y - 1 and cur_x + event.x > 0 and cur_x + event.x < max_x - 1:
+        new_y_pos = cur_y + event.y
+        new_x_pos = cur_x + event.x
+        if new_y_pos in range(1, max_y - 1) and new_x_pos in range(0, max_x - 1):
             self.stdscr.move(cur_y + event.y, cur_x +event.x)
 
     def draw_screen(self, board, iterations):
