@@ -3,7 +3,7 @@
 from random import randint, choice
 import sys
 import copy
-from curses import wrapper
+from curses import wrapper, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 from shutil import get_terminal_size
 import curses
 import time
@@ -12,11 +12,32 @@ BOLD = '\033[1m'
 END = '\033[0m'
 
 
+class Event():
+    def __init__(self):
+        self.event_name = 'eventname'
+
+class Toggle(Event):
+    def __init__(self, y, x):
+        self.event_name = 'Toggle'
+        self.y = y
+        self.x = x
+
+class CursorMove(Event):
+    def __init__(self, y, x):
+        self.event_name = 'Cursor move'
+        self.y = y
+        self.x = x
+
+class Pause(Event):
+    def __init__(self):
+        self.event_name = 'pause'
+
 class Cell():
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.neighbors = []
+        self.iterations_ran = 0
         self.bit = 0
 
     @property
@@ -25,6 +46,9 @@ class Cell():
             return '@'
         return '-'
 
+
+    def flip(self):
+        self.bit = abs(self.bit + -1)
 
     def update(self):
         live_neighbors = 0
@@ -47,7 +71,35 @@ class GameState():
         self.y_size = y
         self.board = [[Cell(x, y) for x in range(self.x_size)] for y in range(self.y_size)]
         self.iterations_ran = 0
+        self._paused = False
         self.find_neighbors()
+
+    def handle_event(self, event):
+        if isinstance(event, Pause):
+            self._paused = not self._paused
+            return
+        if isinstance(event, Toggle):
+            self.board[event.y][event.x].flip()
+            return
+
+
+    def tick(self):
+        yield from self._run_simulation()
+
+
+    def _run_simulation(self):
+        if not self._paused:
+            new_array = [[None for _ in range(self.x_size)] for _ in range(self.y_size)]
+            for row in self.board:
+                for cell in row:
+                    new_status = cell.update()
+                    new_array[cell.y][cell.x] = new_status
+            self.iterations_ran += 1
+            for row in self.board:
+                for cell in row:
+                    cell.bit = new_array[cell.y][cell.x]
+        return self.board, self.iterations_ran
+
 
     def find_neighbors(self):
         for row in self.board:
@@ -82,66 +134,6 @@ class GameState():
             for cell in row:
                 cell.bit = randint(0, 1)
 
-    def handle_keyboard(self, key):
-        if key == 'q':
-            exit(1)
-        if key == curses.KEY_LEFT or key == 'h':
-            return (0, -1)
-        if key == curses.KEY_RIGHT or key == 'l':
-            return (0, 1)
-        if key == curses.KEY_UP or key == 'k':
-            return (-1, 0)
-        if key == curses.KEY_DOWN or key == 'j':
-            return (1, 0)
-        return (1, 1)
-
-    def draw_screen(self, screen, status_scr):
-        screen.clear()
-        screen.border()
-        screen.keypad(True)
-        screen.leaveok(False)
-        status_scr.clear()
-        status_scr.border()
-        cur_y, cur_x = curses.getsyx()
-        max_y, max_x = screen.getmaxyx()
-        for row in self.board:
-            string = ''
-            for cell in row:
-                string += f'{cell.char} '
-
-            screen.addstr(cell.y + 1, 1, string)
-            #screen.addstr(cell.y, 0, string)
-
-        mov_y, mov_x = self.handle_keyboard(screen.getkey())
-        status_scr.addstr(1, 1, f'Generation')
-        status_scr.addstr(2, 1, f'{self.iterations_ran}')
-        status_scr.addstr(3, 1, f'{cur_y}, {cur_x}')
-        status_scr.addstr(4, 1, f'{max_y}, {max_x}')
-        if cur_y + mov_y > 0 and cur_y + mov_y < max_y and cur_x + mov_x > 0 and cur_x + mov_x < max_x:
-            screen.move(cur_y + mov_y, cur_x + mov_x)
-        screen.cursyncup()
-        status_scr.noutrefresh()
-        screen.noutrefresh()
-        curses.doupdate()
-
-    def _generate(self, iterations, screen, status_scr):
-
-        self.iterations_ran = 0
-
-        new_array = [[None for _ in range(self.x_size)] for _ in range(self.y_size)]
-        while self.iterations_ran < iterations:
-            self.draw_screen(screen, status_scr)
-            time.sleep(SLEEP)
-            for row in self.board:
-                for cell in row:
-                    new_status = cell.update()
-                    new_array[cell.y][cell.x] = new_status
-            self.iterations_ran += 1
-            for row in self.board:
-                for cell in row:
-                    cell.bit = new_array[cell.y][cell.x]
-
-
     def __str__(self):
         string = ''
         for row in self.board:
@@ -154,18 +146,100 @@ class GameState():
         return self.__str__()
 
 
+class GameScreen():
+    def __init__(self, stdscr):
+        self.stdscr = stdscr
+        term_width, term_height = get_terminal_size()
+        height = term_height - 1
+        width = term_width - 15
+        self.screen = self.stdscr.subwin(height + 1, width, 0, 0)
+        self.status_scr = self.stdscr.subwin(height + 1, 15, 0, width)
+        self.stdscr.move(11, 11)
+        self.screen.keypad(1)
+        #self.screen.leaveok(True)
+        self.stdscr.timeout(500)
+
+    def handle_keyboard(self):
+        key = self.stdscr.getkey()
+        if key == 'q':
+            exit(1)
+        if key == 'KEY_LEFT' or key == 'h':
+            return CursorMove(0, -2)
+        if key == 'KEY_RIGHT' or key == 'l':
+            return CursorMove(0, 2)
+        if key == 'KEY_UP' or key == 'k':
+            return CursorMove(-1, 0)
+        if key == 'KEY_DOWN' or key == 'j':
+            return CursorMove(1, 0)
+        if key == 'p' or key == 'P':
+            return Pause()
+        if key == 't' or key == 'T':
+            cur_y, cur_x = self.stdscr.getyx()
+            cur_y = cur_y - 1
+            cur_x = int(cur_x / 2)
+            return Toggle(cur_y, cur_x)
+        return None
+
+    def move_cursor(self, event):
+        cur_y, cur_x = self.stdscr.getyx()
+        max_y, max_x = self.screen.getmaxyx()
+
+        if cur_y + event.y > 0 and cur_y + event.y < max_y - 1 and cur_x + event.x > 0 and cur_x + event.x < max_x - 1:
+            self.stdscr.move(cur_y + event.y, cur_x +event.x)
+
+    def draw_screen(self, board, iterations):
+        self.screen.border()
+        self.status_scr.border()
+        for row in board:
+            string = ''
+            for cell in row:
+                string += f'{cell.char} '
+
+            self.screen.addstr(cell.y + 1, 1, string)
+
+        #try:
+        #    event = self.handle_keyboard()
+            #event = self.handle_keyboard(self.stdscr.getkey())
+            #mov_y, mov_x = self.handle_keyboard(self.stdscr.getkey())
+        #except curses.error:
+        #    event = None
+            #mov_y = 0
+            #mov_x = 0
+        self.status_scr.addstr(1, 1, f'Generation')
+        self.status_scr.addstr(2, 1, f'{iterations}')
+    #    self.status_scr.addstr(3, 1, f'{cur_y}, {cur_x}')
+        self.status_scr.noutrefresh()
+        self.screen.noutrefresh()
+        self.stdscr.noutrefresh()
+        curses.doupdate()
+
+
+
 def main(stdscr):
+    curses.curs_set(2)
     stdscr.clear()
 
     term_width, term_height = get_terminal_size()
     height = term_height - 1
     width = term_width - 15
-    board_scr = curses.newwin(height + 1, width, 0, 0)
-    status_scr = curses.newwin(height + 1, 15, 0, width)
     t = GameState(int(width / 2) - 1, height - 1)
+    g = GameScreen(stdscr)
     t.populate()
-    t._generate(999, board_scr, status_scr)
-    #t._generate(999, stdscr)
+    iterations = 0
+    while True:
+        board, iterations = t.tick()
+        g.draw_screen(board, iterations)
+        event = None
+        try:
+            event = g.handle_keyboard()
+        except curses.error:
+            pass
+        if isinstance(event, CursorMove):
+            g.move_cursor(event)
+        if isinstance(event, Pause):
+            t.handle_event(event)
+        if isinstance(event, Toggle):
+            t.handle_event(event)
 
 if __name__ == '__main__':
     wrapper(main)
