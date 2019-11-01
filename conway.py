@@ -208,10 +208,11 @@ class GameScreen():
         self.status_scr.addstr(1, 1, f'Generation')
         self.status_scr.addstr(2, 1, f'{iterations}')
         self.status_scr.addstr(4, 1, f'h, j, k, l')
-        self.status_scr.addstr(5, 1, f'p: pause')
-        self.status_scr.addstr(6, 1, f'f: fill')
-        self.status_scr.addstr(7, 1, f't: toggle')
-        self.status_scr.addstr(8, 1, f'q: quit')
+        self.status_scr.addstr(5, 1, f'\u2190, \u2193, \u2191, \u2192')
+        self.status_scr.addstr(6, 1, f'p: pause')
+        self.status_scr.addstr(7, 1, f'f: fill')
+        self.status_scr.addstr(8, 1, f't: toggle')
+        self.status_scr.addstr(9, 1, f'q: quit')
         self.status_scr.noutrefresh()
         self.screen.noutrefresh()
         self.stdscr.noutrefresh()
@@ -250,7 +251,10 @@ def main(stdscr):
             g.move_cursor(event)
         if isinstance(event, SimEvent):
             t.handle_event(event)
+        time.sleep(0.03)
         loop_end = time.time()
+        # make SIM_RATE a variable held by GameState
+        # allow '-' and '+' to modify the rate, by dispatching an event
         if loop_end - loop_start > SIM_RATE:
             board, iterations = t.tick()
             loop_start = time.time()
