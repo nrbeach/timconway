@@ -2,9 +2,10 @@
 
 from random import randint
 import curses
+import time
 from curses import wrapper
 from shutil import get_terminal_size
-SLEEP = 0.1
+SIM_RATE = 0.255
 BOLD = '\033[1m'
 END = '\033[0m'
 
@@ -159,7 +160,7 @@ class GameScreen():
         self.status_scr = self.stdscr.subwin(height + 1, 15, 0, width)
         self.stdscr.move(11, 11)
         self.screen.keypad(1)
-        self.stdscr.timeout(500)
+        self.stdscr.timeout(0)
         self.screen.border()
         self.status_scr.border()
 
@@ -206,6 +207,11 @@ class GameScreen():
             self.screen.addstr(cell.y + 1, 1, string)
         self.status_scr.addstr(1, 1, f'Generation')
         self.status_scr.addstr(2, 1, f'{iterations}')
+        self.status_scr.addstr(4, 1, f'h, j, k, l')
+        self.status_scr.addstr(5, 1, f'p: pause')
+        self.status_scr.addstr(6, 1, f'f: fill')
+        self.status_scr.addstr(7, 1, f't: toggle')
+        self.status_scr.addstr(8, 1, f'q: quit')
         self.status_scr.noutrefresh()
         self.screen.noutrefresh()
         self.stdscr.noutrefresh()
@@ -224,8 +230,16 @@ def main(stdscr):
     #t = GameState(int(width / 2) - 1, height - 1, populate=True)
     g = GameScreen(stdscr)
     iterations = 0
+    #### make EventHandler the main concern of the loop
+    # while true
+    # start_time
+    # get_event()
+    # dispatch event
+    # if end_time - start_time > sim_rate:
+    #    sim.update()
+    loop_start = time.time()
+    board, iterations = t.tick()
     while True:
-        board, iterations = t.tick()
         g.draw_screen(board, iterations)
         event = None
         try:
@@ -236,6 +250,10 @@ def main(stdscr):
             g.move_cursor(event)
         if isinstance(event, SimEvent):
             t.handle_event(event)
+        loop_end = time.time()
+        if loop_end - loop_start > SIM_RATE:
+            board, iterations = t.tick()
+            loop_start = time.time()
 
 if __name__ == '__main__':
     wrapper(main)
