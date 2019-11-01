@@ -161,24 +161,26 @@ class GameScreen():
         self.stdscr.move(11, 11)
         self.screen.keypad(1)
         self.stdscr.timeout(500)
+        self.screen.border()
+        self.status_scr.border()
 
     def handle_keyboard(self):
         key = self.stdscr.getkey()
         if key == 'q':
             exit(1)
-        if key == 'KEY_LEFT' or key == 'h':
+        if key in ('KEY_LEFT', 'h'):
             return CursorMove(0, -2)
-        if key == 'KEY_RIGHT' or key == 'l':
+        if key in ('KEY_RIGHT', 'l'):
             return CursorMove(0, 2)
-        if key == 'KEY_UP' or key == 'k':
+        if key in ('KEY_UP', 'k'):
             return CursorMove(-1, 0)
-        if key == 'KEY_DOWN' or key == 'j':
+        if key in ('KEY_DOWN', 'j'):
             return CursorMove(1, 0)
-        if key == 'p' or key == 'P':
+        if key in ('p', 'P'):
             return Pause()
-        if key == 'f' or key == 'F':
+        if key in ('f', 'F'):
             return RandomFill()
-        if key == 't' or key == 'T':
+        if key in ('t', 'T'):
             cur_y, cur_x = self.stdscr.getyx()
             cur_y = cur_y - 1
             cur_x = int(cur_x / 2)
