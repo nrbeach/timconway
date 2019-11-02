@@ -27,22 +27,20 @@ def main(stdscr):
     width = term_width - 15
     t = GameState(int(width / 2) - 1, height - 1)
     g = GameScreen(stdscr, height, width)
-    loop_start = time.time()
-    #board, iterations = t.tick()
-    event = t.tick()
+
     keyboard_handler = KeyboardHandler(stdscr)
     event_handler = EventHandler(t.handle_event, g.handle_event)
-    event_handler.dispatch_event(event)
 
+    loop_start = time.time()
+    event = t.tick()
     while True:
-        #g.draw_screen(board, iterations)
-        event = None
         try:
             event = keyboard_handler.get_key()
         except curses.error:
             pass
         if event:
             event_handler.dispatch_event(event)
+            event = None
 
         loop_end = time.time()
         if loop_end - loop_start > SIM_RATE:
