@@ -4,7 +4,8 @@ import curses
 from constants import (STATUS_SCREEN_SIM_TALLY_V_ALIGN, STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, STATUS_SCREEN_FILL_V_ALIGN,
                        STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, STATUS_SCREEN_PAUSE_V_ALIGN, STATUS_SCREEN_TOGGLE_V_ALIGN,
                        STATUS_SCREEN_QUIT_V_ALIGN)
-from events import CursorMove, Pause, RandomFill, Toggle
+from events import CursorMove, Pause, RandomFill, Toggle, GetCursorPos, CurrentCursorPos
+from eventhandler import EventHandler
 
 class GameScreen():
     def __init__(self, stdscr, height, width):
@@ -19,28 +20,17 @@ class GameScreen():
         self.screen.border()
         self.status_scr.border()
 
-    def handle_keyboard(self):
-        key = self.stdscr.getkey()
-        if key == 'q':
-            exit(1)
-        if key in ('KEY_LEFT', 'h'):
-            return CursorMove(0, -2)
-        if key in ('KEY_RIGHT', 'l'):
-            return CursorMove(0, 2)
-        if key in ('KEY_UP', 'k'):
-            return CursorMove(-1, 0)
-        if key in ('KEY_DOWN', 'j'):
-            return CursorMove(1, 0)
-        if key in ('p', 'P'):
-            return Pause()
-        if key in ('f', 'F'):
-            return RandomFill()
-        if key in ('t', 'T'):
-            cur_y, cur_x = self.stdscr.getyx()
-            cur_y = cur_y - 1
-            cur_x = int(cur_x / 2)
-            return Toggle(cur_y, cur_x)
-        return None
+
+    def handle_event(self, event):
+        if isinstance(event, CursorMove):
+            self.move_cursor(event)
+        if isinstance(event, GetCursorPos):
+            return self._get_cursor_pos()
+
+
+    def _get_cursor_pos(self):
+        cur_y, cur_x = self.stdscr.getyx()
+        return CurrentCursorPos(cur_y, cur_x)
 
     def move_cursor(self, event):
         cur_y, cur_x = self.stdscr.getyx()

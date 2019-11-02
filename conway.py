@@ -7,8 +7,11 @@ from curses import wrapper
 from shutil import get_terminal_size
 from constants import CPU_NICE, SIM_RATE
 from events import SimEvent, UIEvent, RandomFill, Toggle, CursorMove, Pause
+from keyboard_handler import KeyboardHandler
 from simulation import GameState
 from ui import GameScreen
+from eventhandler import EventHandler
+
 
 
 
@@ -24,17 +27,19 @@ def main(stdscr):
     iterations = 0
     loop_start = time.time()
     board, iterations = t.tick()
+    keyboard_handler = KeyboardHandler(stdscr)
+    event_handler = EventHandler(t.handle_event, g.handle_event)
+
     while True:
         g.draw_screen(board, iterations)
         event = None
         try:
-            event = g.handle_keyboard()
+            event = keyboard_handler.get_key()
         except curses.error:
             pass
-        if isinstance(event, CursorMove):
-            g.move_cursor(event)
-        if isinstance(event, SimEvent):
-            t.handle_event(event)
+        if event:
+            event_handler.dispatch_event(event)
+
         loop_end = time.time()
         if loop_end - loop_start > SIM_RATE:
             board, iterations = t.tick()
