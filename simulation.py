@@ -2,7 +2,7 @@
 
 from cell import Cell
 from random import randint
-from events import Pause, RandomFill, Toggle
+from events import Pause, RandomFill, FlipBit, SimulationState
 
 class GameState():
     def __init__(self, x=5, y=5, populate=False):
@@ -18,14 +18,16 @@ class GameState():
     def handle_event(self, event):
         if isinstance(event, Pause):
             self._paused = not self._paused
-        if isinstance(event, Toggle):
+        if isinstance(event, FlipBit):
             self.board[event.y][event.x].flip()
         if isinstance(event, RandomFill):
             self.populate()
+        return SimulationState(str(self), self.iterations_ran)
 
 
     def tick(self):
-        yield from self._run_simulation()
+        return self._run_simulation()
+        #yield from self._run_simulation()
 
 
     def _run_simulation(self):
@@ -39,7 +41,9 @@ class GameState():
             for row in self.board:
                 for cell in row:
                     cell.bit = new_array[cell.y][cell.x]
-        return self.board, self.iterations_ran
+
+        return SimulationState(str(self), self.iterations_ran)
+        #return self.board, self.iterations_ran
 
 
     def find_neighbors(self):
