@@ -45,13 +45,8 @@ class GameScreen():
             self.stdscr.move(cur_y + event.y, cur_x + event.x)
 
     def draw_screen(self, event):
-    #def draw_screen(self, board, iterations):
         self.screen.border()
         self.status_scr.border()
-      #  for row in board:
-      #      string = ''
-      #      for cell in row:
-      #          string += f'{cell.char} '
 
         for idx, row in enumerate(event.board.split('\n')):
             self.screen.addstr(idx + 1, 1, row)

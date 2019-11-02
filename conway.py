@@ -5,7 +5,7 @@ import curses
 import time
 from curses import wrapper
 from shutil import get_terminal_size
-from constants import CPU_NICE, SIM_RATE
+from constants import CPU_NICE, DEBUG, SIM_RATE
 from keyboard_handler import KeyboardHandler
 from simulation import GameState
 from ui import GameScreen
@@ -17,7 +17,8 @@ from logger import log_line
 
 
 def main(stdscr):
-    #log_line(f'===== {datetime.now()} =====')
+    if DEBUG:
+        log_line(f'===== {datetime.now()} =====')
     curses.curs_set(2)
     stdscr.clear()
 
