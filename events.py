@@ -52,7 +52,9 @@ class Pause(SimEvent):
     def __init__(self):
         self.event_name = 'pause'
 
+
 class SimulationState(UIEvent):
     def __init__(self, board, iterations):
         self.board = board
         self.iterations = iterations
+

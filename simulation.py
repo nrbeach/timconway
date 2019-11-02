@@ -22,6 +22,7 @@ class GameState():
             self.board[event.y][event.x].flip()
         if isinstance(event, RandomFill):
             self.populate()
+        return SimulationState(str(self), self.iterations_ran)
 
 
     def tick(self):

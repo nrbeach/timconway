@@ -3,7 +3,7 @@
 import curses
 from constants import (STATUS_SCREEN_SIM_TALLY_V_ALIGN, STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, STATUS_SCREEN_FILL_V_ALIGN,
                        STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, STATUS_SCREEN_PAUSE_V_ALIGN, STATUS_SCREEN_TOGGLE_V_ALIGN,
-                       STATUS_SCREEN_QUIT_V_ALIGN)
+                       STATUS_SCREEN_QUIT_V_ALIGN, STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN)
 from events import CursorMove, GetCursorPos, CurrentCursorPos, SimulationState
 from eventhandler import EventHandler
 from logger import log_line
@@ -56,8 +56,8 @@ class GameScreen():
         for idx, row in enumerate(event.board.split('\n')):
             self.screen.addstr(idx + 1, 1, row)
 
-        self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_V_ALIGN, 1, f'Generation')
-        self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_V_ALIGN + 1, 1, f'{event.iterations}')
+        self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN, 1, f'Generation')
+        self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_V_ALIGN, 1, f'{event.iterations}')
         self.status_scr.addstr(STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, 1, f'h, j, k, l')
         self.status_scr.addstr(STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, 1, f'\u2190, \u2193, \u2191, \u2192')
         self.status_scr.addstr(STATUS_SCREEN_PAUSE_V_ALIGN, 1, f'p: pause')
