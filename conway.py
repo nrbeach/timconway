@@ -6,7 +6,6 @@ import time
 from curses import wrapper
 from shutil import get_terminal_size
 from constants import CPU_NICE, SIM_RATE
-from events import SimEvent, UIEvent, RandomFill, Toggle, CursorMove, Pause
 from keyboard_handler import KeyboardHandler
 from simulation import GameState
 from ui import GameScreen
@@ -27,14 +26,15 @@ def main(stdscr):
     width = term_width - 15
     t = GameState(int(width / 2) - 1, height - 1)
     g = GameScreen(stdscr, height, width)
-    iterations = 0
     loop_start = time.time()
-    board, iterations = t.tick()
+    #board, iterations = t.tick()
+    event = t.tick()
     keyboard_handler = KeyboardHandler(stdscr)
     event_handler = EventHandler(t.handle_event, g.handle_event)
+    event_handler.dispatch_event(event)
 
     while True:
-        g.draw_screen(board, iterations)
+        #g.draw_screen(board, iterations)
         event = None
         try:
             event = keyboard_handler.get_key()
@@ -45,7 +45,8 @@ def main(stdscr):
 
         loop_end = time.time()
         if loop_end - loop_start > SIM_RATE:
-            board, iterations = t.tick()
+            event = t.tick()
+            event_handler.dispatch_event(event)
             loop_start = time.time()
         time.sleep(CPU_NICE)    # sleep to avoid excessive CPU use
 

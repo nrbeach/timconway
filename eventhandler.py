@@ -25,9 +25,5 @@ class EventHandler:
             return self.sim_event_handler(event)
         if isinstance(event, UIEvent):
             return self.ui_event_handler(event)
-        #if self._result:
-        #    self._result = None
-        #    event = self._result
-        #    self.dispatch_event(event)
 
 
