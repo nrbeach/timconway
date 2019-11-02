@@ -2,6 +2,7 @@
 
 
 from events import *
+from logger import log_line
 
 
 class EventHandler:
@@ -14,9 +15,12 @@ class EventHandler:
 
     def dispatch_event(self, event):
         if isinstance(event, MultiStepEvent):
+            self._result = None
             for step in event.steps:
                 self._result = self.dispatch_event(step)
-            self.dispatch_event(event.final(self._result))
+
+            temp = event.final(self._result)
+            self.dispatch_event(temp)
         if isinstance(event, SimEvent):
             return self.sim_event_handler(event)
         if isinstance(event, UIEvent):

@@ -2,7 +2,7 @@
 
 from cell import Cell
 from random import randint
-from events import Pause, RandomFill, Toggle
+from events import Pause, RandomFill,FlipBit
 
 class GameState():
     def __init__(self, x=5, y=5, populate=False):
@@ -18,7 +18,7 @@ class GameState():
     def handle_event(self, event):
         if isinstance(event, Pause):
             self._paused = not self._paused
-        if isinstance(event, Toggle):
+        if isinstance(event, FlipBit):
             self.board[event.y][event.x].flip()
         if isinstance(event, RandomFill):
             self.populate()

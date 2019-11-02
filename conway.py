@@ -12,10 +12,13 @@ from simulation import GameState
 from ui import GameScreen
 from eventhandler import EventHandler
 
+from datetime import datetime
+from logger import log_line
 
 
 
 def main(stdscr):
+    #log_line(f'===== {datetime.now()} =====')
     curses.curs_set(2)
     stdscr.clear()
 

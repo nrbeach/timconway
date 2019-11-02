@@ -22,9 +22,9 @@ class GetCursorPos(UIEvent):
         self.y = None
 
 class CurrentCursorPos(UIEvent):
-    def __init__(self, x, y):
-        self.x = None
-        self.y = None
+    def __init__(self, y, x):
+        self.x = x
+        self.y = y
 
 class RandomFill(SimEvent):
     def __init__(self):
@@ -33,8 +33,8 @@ class RandomFill(SimEvent):
 class FlipBit(SimEvent):
     def __init__(self, parent):
         self._parent = parent
-        self.y = self._parent.y
-        self.x = self._parent.x
+        self.y = self._parent.y - 1
+        self.x = int(self._parent.x / 2)
 
 class Toggle(MultiStepEvent):
     def __init__(self):
