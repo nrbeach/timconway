@@ -5,6 +5,7 @@ import curses
 import time
 from curses import wrapper
 from shutil import get_terminal_size
+from constants import CPU_NICE
 SIM_RATE = 0.255
 BOLD = '\033[1m'
 END = '\033[0m'
@@ -251,13 +252,13 @@ def main(stdscr):
             g.move_cursor(event)
         if isinstance(event, SimEvent):
             t.handle_event(event)
-        time.sleep(0.03)
         loop_end = time.time()
         # make SIM_RATE a variable held by GameState
         # allow '-' and '+' to modify the rate, by dispatching an event
         if loop_end - loop_start > SIM_RATE:
             board, iterations = t.tick()
             loop_start = time.time()
+        time.sleep(CPU_NICE)    # sleep to avoid excessive CPU use
 
 if __name__ == '__main__':
     wrapper(main)
