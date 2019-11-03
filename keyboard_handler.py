@@ -23,6 +23,8 @@ class KeyboardHandler:
             return RandomFill()
         if key in ('t', 'T'):
             return Toggle()
+        if key in ('c', 'C'):
+            return ClearSimState()
         #    cur_y, cur_x = self.stdscr.getyx()
         #    cur_y = cur_y - 1
         #    cur_x = int(cur_x / 2)

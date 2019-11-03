@@ -2,7 +2,7 @@
 
 from cell import Cell
 from random import randint
-from events import Pause, RandomFill, FlipBit, SimulationState
+from events import Pause, RandomFill, FlipBit, SimulationState, ClearSimState
 
 class GameState():
     def __init__(self, x=5, y=5, populate=False):
@@ -22,12 +22,13 @@ class GameState():
             self.board[event.y][event.x].flip()
         if isinstance(event, RandomFill):
             self.populate()
+        if isinstance(event, ClearSimState):
+            self.clear_board()
         return SimulationState(str(self), self.iterations_ran)
 
 
     def tick(self):
         return self._run_simulation()
-        #yield from self._run_simulation()
 
 
     def _run_simulation(self):
@@ -43,7 +44,6 @@ class GameState():
                     cell.bit = new_array[cell.y][cell.x]
 
         return SimulationState(str(self), self.iterations_ran)
-        #return self.board, self.iterations_ran
 
 
     def find_neighbors(self):
@@ -70,6 +70,11 @@ class GameState():
         for row in self.board:
             for cell in row:
                 cell.bit = randint(0, 1)
+
+    def clear_board(self):
+        for row in self.board:
+            for cell in row:
+                cell.bit = 0
 
     def __str__(self):
         string = ''

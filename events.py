@@ -67,4 +67,8 @@ class SimulationState(UIEvent):
         self.iterations = iterations
 
 
+class ClearSimState(SimEvent):
+    def __init__(self):
+        self.event_name = 'ClearSimState'
+
 
