@@ -1,7 +1,10 @@
 
 
 def log_line(line):
-    if line[-1] != '\n':
-        line += '\n'
+    try:
+        if line[-1] != '\n':
+            line += '\n'
+    except TypeError:
+        line = str(line)
     with open('log.txt', 'a') as fh:
         fh.write(line)

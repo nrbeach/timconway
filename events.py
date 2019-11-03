@@ -11,6 +11,10 @@ class SimEvent(Event):
     def __init__(self):
         self.event_name = 'SimEvent'
 
+class SimRateEvent(Event):
+    def __init__(self):
+        self.event_name = 'SimRateEvent'
+
 class UIEvent(Event):
     def __init__(self):
         self.event_name = 'UIEvent'
@@ -31,6 +35,11 @@ class CurrentCursorPos(UIEvent):
         self.event_name = 'CurrentCursorPos'
         self.x = x
         self.y = y
+
+class CurrentSimRate(UIEvent):
+    def __init__(self, sim_rate_number):
+        self.event_name = 'CurrentSimRate'
+        self.sim_rate_number = sim_rate_number
 
 class RandomFill(SimEvent):
     def __init__(self):
@@ -59,6 +68,25 @@ class Pause(SimEvent):
     def __init__(self):
         self.event_name = 'Pause'
 
+
+class ModifySimRate(MultiStepEvent):
+    def __init__(self, val):
+        self.event_name = 'ModifySimRate'
+        self.final = CurrentSimRate
+        self.steps = []
+        if val > 0:
+            self.steps.append(IncreaseSimRate())
+        if val < 0:
+            self.steps.append(DecreaseSimRate())
+
+
+class DecreaseSimRate(SimRateEvent):
+    def __init__(self):
+        self.event_name = 'DecreaseSimRate'
+
+class IncreaseSimRate(SimRateEvent):
+    def __init__(self):
+        self.event_name = 'IncreaseSimRate'
 
 class SimulationState(UIEvent):
     def __init__(self, board, iterations):
