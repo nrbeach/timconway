@@ -3,7 +3,7 @@
 import curses
 from constants import (STATUS_SCREEN_SIM_TALLY_V_ALIGN, STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, STATUS_SCREEN_FILL_V_ALIGN,
                        STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, STATUS_SCREEN_PAUSE_V_ALIGN, STATUS_SCREEN_TOGGLE_V_ALIGN,
-                       STATUS_SCREEN_QUIT_V_ALIGN, STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN)
+                       STATUS_SCREEN_QUIT_V_ALIGN, STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN, STATUS_SCREEN_CLEAR_V_ALIGN)
 from events import CursorMove, GetCursorPos, CurrentCursorPos, SimulationState
 from eventhandler import EventHandler
 from logger import log_line
@@ -58,6 +58,7 @@ class GameScreen():
         self.status_scr.addstr(STATUS_SCREEN_PAUSE_V_ALIGN, 1, f'p: pause')
         self.status_scr.addstr(STATUS_SCREEN_FILL_V_ALIGN, 1, f'f: fill')
         self.status_scr.addstr(STATUS_SCREEN_TOGGLE_V_ALIGN, 1, f't: toggle')
+        self.status_scr.addstr(STATUS_SCREEN_CLEAR_V_ALIGN, 1, f'c: clear sim')
         self.status_scr.addstr(STATUS_SCREEN_QUIT_V_ALIGN, 1, f'q: quit')
         self.status_scr.noutrefresh()
         self.screen.noutrefresh()
