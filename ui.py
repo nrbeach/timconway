@@ -3,8 +3,10 @@
 import curses
 from constants import (STATUS_SCREEN_SIM_TALLY_V_ALIGN, STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, STATUS_SCREEN_FILL_V_ALIGN,
                        STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, STATUS_SCREEN_PAUSE_V_ALIGN, STATUS_SCREEN_TOGGLE_V_ALIGN,
-                       STATUS_SCREEN_QUIT_V_ALIGN, STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN, STATUS_SCREEN_CLEAR_V_ALIGN)
-from events import CursorMove, GetCursorPos, CurrentCursorPos, SimulationState
+                       STATUS_SCREEN_QUIT_V_ALIGN, STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN, STATUS_SCREEN_CLEAR_V_ALIGN,
+                       STATUS_SCREEN_SIM_RATE_V_ALIGN, STATUS_SCREEN_DEC_SIM_RATE_V_ALIGN,
+                       STATUS_SCREEN_INC_SIM_RATE_V_ALIGN)
+from events import CursorMove, GetCursorPos, CurrentCursorPos, SimulationState, CurrentSimRate
 from eventhandler import EventHandler
 from logger import log_line
 
@@ -20,6 +22,8 @@ class GameScreen():
         self.stdscr.timeout(0)
         self.screen.border()
         self.status_scr.border()
+        self._reported_sim_rate = 5
+        self._last_sim_state = None
 
 
     def handle_event(self, event):
@@ -28,7 +32,11 @@ class GameScreen():
         if isinstance(event, GetCursorPos):
             return self._get_cursor_pos()
         if isinstance(event, SimulationState):
+            self._last_sim_state = event
             self.draw_screen(event)
+        if isinstance(event, CurrentSimRate):
+            self._reported_sim_rate = event.sim_rate_number
+            self.draw_screen(self._last_sim_state)
 
 
     def _get_cursor_pos(self):
@@ -53,8 +61,12 @@ class GameScreen():
 
         self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN, 1, f'Generation')
         self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_V_ALIGN, 1, f'{event.iterations}')
+        self.status_scr.addstr(STATUS_SCREEN_SIM_RATE_V_ALIGN, 1, f'Rate: {self._reported_sim_rate}/10 ')
+
         self.status_scr.addstr(STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, 1, f'h, j, k, l')
         self.status_scr.addstr(STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, 1, f'\u2190, \u2193, \u2191, \u2192')
+        self.status_scr.addstr(STATUS_SCREEN_INC_SIM_RATE_V_ALIGN, 1, f'+: Inc sim')
+        self.status_scr.addstr(STATUS_SCREEN_DEC_SIM_RATE_V_ALIGN, 1, f'-: Dec sim')
         self.status_scr.addstr(STATUS_SCREEN_PAUSE_V_ALIGN, 1, f'p: pause')
         self.status_scr.addstr(STATUS_SCREEN_FILL_V_ALIGN, 1, f'f: fill')
         self.status_scr.addstr(STATUS_SCREEN_TOGGLE_V_ALIGN, 1, f't: toggle')

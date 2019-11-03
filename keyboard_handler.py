@@ -25,8 +25,8 @@ class KeyboardHandler:
             return Toggle()
         if key in ('c', 'C'):
             return ClearSimState()
-        #    cur_y, cur_x = self.stdscr.getyx()
-        #    cur_y = cur_y - 1
-        #    cur_x = int(cur_x / 2)
-        #    return Toggle(cur_y, cur_x)
+        if key in ('+'):
+            return ModifySimRate(1)
+        if key in ('-'):
+            return ModifySimRate(-1)
         return None
