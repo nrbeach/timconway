@@ -4,21 +4,27 @@ import curses
 import time
 from curses import wrapper
 from shutil import get_terminal_size
-from constants import CPU_NICE, DEBUG, SIM_RATE
+from constants import CPU_NICE, DEBUG
 from keyboard_handler import KeyboardHandler
 from simulation import GameState
 from ui import GameScreen
 from eventhandler import EventHandler
 from controller import SimulationRate
+#import sys
+#sys.path.append('/home/nate/projects')
 
+from logger import LJ
 from datetime import datetime
-from logger import log_line
+#from logger import log_line, Line
 
+#from lumberjack.lumberjack import Lumberjack
 
+#lj = Lumberjack('ljlog.txt')
 
 def main(stdscr):
     if DEBUG:
-        log_line(f'===== {datetime.now()} =====')
+        LJ.info(f'---- {datetime.now()} --- ')
+        #log_line(Line(msg=f'===== {datetime.now()} ====='))
     curses.curs_set(2)
     stdscr.clear()
 

@@ -3,9 +3,14 @@
 
 from constants import DEBUG
 from events import *
-from logger import log_line
-
-
+import sys
+#sys.path.append('/home/nate/projects/')
+#from lumberjack.lumberjack import Lumberjack
+#
+#lj = Lumberjack('ljlog.txt')
+#
+#
+from logger import LJ
 class EventHandler:
     def __init__(self, sim_event_handler, ui_event_handler, sim_rate_event_handler):
         self._received_event_queue = []
@@ -17,7 +22,8 @@ class EventHandler:
 
     def dispatch_event(self, event):
         if DEBUG:
-            log_line(f'begin dispatch_event(), {event}')
+            LJ.info(event)
+
         if isinstance(event, MultiStepEvent):
             for step in event.steps:
                 self._result = self.dispatch_event(step)

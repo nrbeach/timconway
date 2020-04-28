@@ -1,6 +1,6 @@
 """ A nice place to hold all the constants """
 
-DEBUG = False
+DEBUG = True
 
 CPU_NICE = 0.03
 SIM_RATE = 0.255
