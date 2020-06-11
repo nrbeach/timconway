@@ -1,16 +1,16 @@
 """ EventHandler class """
-
+import sys
 
 from constants import DEBUG
 from events import *
-import sys
-#sys.path.append('/home/nate/projects/')
-#from lumberjack.lumberjack import Lumberjack
+
+# sys.path.append('/home/nate/projects/')
+# from lumberjack.lumberjack import Lumberjack
 #
-#lj = Lumberjack('ljlog.txt')
+# lj = Lumberjack('ljlog.txt')
 #
 #
-from logger import LJ
+# from logger import LJ
 class EventHandler:
     def __init__(self, sim_event_handler, ui_event_handler, sim_rate_event_handler):
         self._received_event_queue = []
@@ -21,8 +21,8 @@ class EventHandler:
         self._result = None
 
     def dispatch_event(self, event):
-        if DEBUG:
-            LJ.info(event)
+        # if DEBUG:
+        # LJ.info(event)
 
         if isinstance(event, MultiStepEvent):
             for step in event.steps:
@@ -41,5 +41,3 @@ class EventHandler:
             return self._result
         if self._result:
             self.dispatch_event(self._result)
-
-

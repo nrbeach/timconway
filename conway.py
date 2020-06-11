@@ -1,30 +1,33 @@
 #!/usr/bin/env python3
-
 import curses
 import time
 from curses import wrapper
+from datetime import datetime
 from shutil import get_terminal_size
-from constants import CPU_NICE, DEBUG
+
+from constants import CPU_NICE
+from constants import DEBUG
+from controller import SimulationRate
+from eventhandler import EventHandler
 from keyboard_handler import KeyboardHandler
 from simulation import GameState
 from ui import GameScreen
-from eventhandler import EventHandler
-from controller import SimulationRate
-#import sys
-#sys.path.append('/home/nate/projects')
 
-from logger import LJ
-from datetime import datetime
-#from logger import log_line, Line
+# import sys
+# sys.path.append('/home/nate/projects')
+# from logger import LJ
 
-#from lumberjack.lumberjack import Lumberjack
+# from logger import log_line, Line
 
-#lj = Lumberjack('ljlog.txt')
+# from lumberjack.lumberjack import Lumberjack
+
+# lj = Lumberjack('ljlog.txt')
+
 
 def main(stdscr):
-    if DEBUG:
-        LJ.info(f'---- {datetime.now()} --- ')
-        #log_line(Line(msg=f'===== {datetime.now()} ====='))
+    #    if DEBUG:
+    # LJ.info(f'---- {datetime.now()} --- ')
+    # log_line(Line(msg=f'===== {datetime.now()} ====='))
     curses.curs_set(2)
     stdscr.clear()
 
@@ -54,7 +57,8 @@ def main(stdscr):
             event = t.tick()
             event_handler.dispatch_event(event)
             loop_start = time.time()
-        time.sleep(CPU_NICE)    # sleep to avoid excessive CPU use
+        time.sleep(CPU_NICE)  # sleep to avoid excessive CPU use
+
 
 if __name__ == '__main__':
     wrapper(main)
