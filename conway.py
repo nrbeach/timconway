@@ -13,21 +13,8 @@ from keyboard_handler import KeyboardHandler
 from simulation import GameState
 from ui import GameScreen
 
-# import sys
-# sys.path.append('/home/nate/projects')
-# from logger import LJ
-
-# from logger import log_line, Line
-
-# from lumberjack.lumberjack import Lumberjack
-
-# lj = Lumberjack('ljlog.txt')
-
 
 def main(stdscr):
-    #    if DEBUG:
-    # LJ.info(f'---- {datetime.now()} --- ')
-    # log_line(Line(msg=f'===== {datetime.now()} ====='))
     curses.curs_set(2)
     stdscr.clear()
 
@@ -60,5 +47,5 @@ def main(stdscr):
         time.sleep(CPU_NICE)  # sleep to avoid excessive CPU use
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     wrapper(main)

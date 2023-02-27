@@ -4,13 +4,7 @@ import sys
 from constants import DEBUG
 from events import *
 
-# sys.path.append('/home/nate/projects/')
-# from lumberjack.lumberjack import Lumberjack
-#
-# lj = Lumberjack('ljlog.txt')
-#
-#
-# from logger import LJ
+
 class EventHandler:
     def __init__(self, sim_event_handler, ui_event_handler, sim_rate_event_handler):
         self._received_event_queue = []

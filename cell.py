@@ -1,6 +1,7 @@
 """ Cell class, representing state of a single cell in Conway's game of life """
 
-class Cell():
+
+class Cell:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -11,9 +12,8 @@ class Cell():
     @property
     def char(self):
         if self.bit == 1:
-            return '@'
-        return '-'
-
+            return "@"
+        return "-"
 
     def flip(self):
         self.bit = abs(self.bit + -1)

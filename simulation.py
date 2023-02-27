@@ -4,11 +4,14 @@ from cell import Cell
 from random import randint
 from events import Pause, RandomFill, FlipBit, SimulationState, ClearSimState
 
-class GameState():
+
+class GameState:
     def __init__(self, x=5, y=5, populate=False):
         self.x_size = x
         self.y_size = y
-        self.board = [[Cell(x, y) for x in range(self.x_size)] for y in range(self.y_size)]
+        self.board = [
+            [Cell(x, y) for x in range(self.x_size)] for y in range(self.y_size)
+        ]
         if populate:
             self.populate()
         self.iterations_ran = 0
@@ -26,10 +29,8 @@ class GameState():
             self.clear_board()
         return SimulationState(str(self), self.iterations_ran)
 
-
     def tick(self):
         return self._run_simulation()
-
 
     def _run_simulation(self):
         if not self._paused:
@@ -45,25 +46,24 @@ class GameState():
 
         return SimulationState(str(self), self.iterations_ran)
 
-
     def find_neighbors(self):
         for row in self.board:
             for cell in row:
-                if cell.y > 0: # up
+                if cell.y > 0:  # up
                     cell.neighbors.append(self.board[cell.y - 1][cell.x])
-                if cell.y > 0 and cell.x > 0: # up left
+                if cell.y > 0 and cell.x > 0:  # up left
                     cell.neighbors.append(self.board[cell.y - 1][cell.x - 1])
-                if cell.x > 0: # left
+                if cell.x > 0:  # left
                     cell.neighbors.append(self.board[cell.y][cell.x - 1])
-                if cell.x > 0 and cell.y < self.y_size - 1: # down left
+                if cell.x > 0 and cell.y < self.y_size - 1:  # down left
                     cell.neighbors.append(self.board[cell.y + 1][cell.x - 1])
-                if cell.y < self.y_size - 1: # down
+                if cell.y < self.y_size - 1:  # down
                     cell.neighbors.append(self.board[cell.y + 1][cell.x])
-                if cell.y < self.y_size - 1 and cell.x < self.x_size - 1: # down
+                if cell.y < self.y_size - 1 and cell.x < self.x_size - 1:  # down
                     cell.neighbors.append(self.board[cell.y + 1][cell.x + 1])
-                if cell.x < self.x_size - 1: # down
+                if cell.x < self.x_size - 1:  # down
                     cell.neighbors.append(self.board[cell.y][cell.x + 1])
-                if cell.x < self.x_size - 1 and cell.y > 0: # up right
+                if cell.x < self.x_size - 1 and cell.y > 0:  # up right
                     cell.neighbors.append(self.board[cell.y - 1][cell.x + 1])
 
     def populate(self, template=None):
@@ -77,13 +77,12 @@ class GameState():
                 cell.bit = 0
 
     def __str__(self):
-        string = ''
+        string = ""
         for row in self.board:
             for cell in row:
-                string += f'{cell.char} '
-            string += '\n'
+                string += f"{cell.char} "
+            string += "\n"
         return string
 
     def __repr__(self):
         return self.__str__()
-
