@@ -67,26 +67,28 @@ class GameScreen:
         self.screen.border()
         self.status_scr.border()
 
-        for idx, row in enumerate(event.board.split('\n')):
+        for idx, row in enumerate(event.board.split("\n")):
             self.screen.addstr(idx + 1, 1, row)
 
-        self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN, 1, f'Generation')
-        self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_V_ALIGN, 1, f'{event.iterations}')
+        self.status_scr.addstr(STATUS_SCREEN_SIM_TALLY_HEADER_V_ALIGN, 1, f"Generation")
         self.status_scr.addstr(
-            STATUS_SCREEN_SIM_RATE_V_ALIGN, 1, f'Rate: {self._reported_sim_rate}/10 '
+            STATUS_SCREEN_SIM_TALLY_V_ALIGN, 1, f"{event.iterations}"
+        )
+        self.status_scr.addstr(
+            STATUS_SCREEN_SIM_RATE_V_ALIGN, 1, f"Rate: {self._reported_sim_rate}/10 "
         )
 
-        self.status_scr.addstr(STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, 1, f'h, j, k, l')
+        self.status_scr.addstr(STATUS_SCREEN_VIM_KEYMAP_V_ALIGN, 1, f"h, j, k, l")
         self.status_scr.addstr(
-            STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, 1, f'\u2190, \u2193, \u2191, \u2192'
+            STATUS_SCREEN_DIR_KEYMAP_V_ALIGN, 1, f"\u2190, \u2193, \u2191, \u2192"
         )
-        self.status_scr.addstr(STATUS_SCREEN_INC_SIM_RATE_V_ALIGN, 1, f'+: Inc sim')
-        self.status_scr.addstr(STATUS_SCREEN_DEC_SIM_RATE_V_ALIGN, 1, f'-: Dec sim')
-        self.status_scr.addstr(STATUS_SCREEN_PAUSE_V_ALIGN, 1, f'p: pause')
-        self.status_scr.addstr(STATUS_SCREEN_FILL_V_ALIGN, 1, f'f: fill')
-        self.status_scr.addstr(STATUS_SCREEN_TOGGLE_V_ALIGN, 1, f't: toggle')
-        self.status_scr.addstr(STATUS_SCREEN_CLEAR_V_ALIGN, 1, f'c: clear sim')
-        self.status_scr.addstr(STATUS_SCREEN_QUIT_V_ALIGN, 1, f'q: quit')
+        self.status_scr.addstr(STATUS_SCREEN_INC_SIM_RATE_V_ALIGN, 1, f"+: Inc sim")
+        self.status_scr.addstr(STATUS_SCREEN_DEC_SIM_RATE_V_ALIGN, 1, f"-: Dec sim")
+        self.status_scr.addstr(STATUS_SCREEN_PAUSE_V_ALIGN, 1, f"p: pause")
+        self.status_scr.addstr(STATUS_SCREEN_FILL_V_ALIGN, 1, f"f: fill")
+        self.status_scr.addstr(STATUS_SCREEN_TOGGLE_V_ALIGN, 1, f"t: toggle")
+        self.status_scr.addstr(STATUS_SCREEN_CLEAR_V_ALIGN, 1, f"c: clear sim")
+        self.status_scr.addstr(STATUS_SCREEN_QUIT_V_ALIGN, 1, f"q: quit")
         self.status_scr.noutrefresh()
         self.screen.noutrefresh()
         self.stdscr.noutrefresh()
